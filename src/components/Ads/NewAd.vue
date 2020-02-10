@@ -70,9 +70,10 @@ export default {
 				const ad = {
 					title: this.title,
 					description: this.description,
-					promo: this.promo
+					promo: this.promo,
+					imageSrc: require('@/img/boeing-737-bbj.jpg')
 				}
-				window.console.log(ad)
+				this.$store.dispatch('createAd', ad)
 			}
 		}
 	}

@@ -58,6 +58,26 @@ dark
 </v-row>
 </v-container>
 </v-content>
+<template v-if="error">
+  <v-snackbar
+  v-model="snackbar"
+  @input='closeError'
+  :color="color"
+  :multi-line="mode === 'multi-line'"
+  :timeout="timeout"
+  >
+  {{error}}
+  <v-btn
+  dark
+  text
+  @click="closeError"
+  value="true"
+  >
+  Close
+</v-btn>
+</v-snackbar>
+</template>
+
 <v-footer
 color="#424242"
 app
@@ -74,6 +94,10 @@ app
 export default {
   data: () => ({
     drawer: null,
+    color: 'error',
+    timeout: 5000,
+    mode: '',
+    snackbar: true,
     links: [
     {title: 'Вход', icon: 'mdi-account-lock', url: '/login'},
     {title: 'Регистрация', icon: 'mdi-account-card-details', url: '/registration'},
@@ -82,6 +106,16 @@ export default {
     {title: 'Мой парк', icon: 'mdi-clipboard-list', url: '/list'}
     ]
   }),
+  computed: {
+    error () {
+      return this.$store.getters.error
+    }
+  },
+  methods: {
+    closeError () {
+      this.$store.dispatch('clearError')
+    }
+  }
 
 }
 </script>
@@ -90,7 +124,7 @@ export default {
 @import url('https://fonts.googleapis.com/css?family=Tangerine:400,700&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Istok+Web:400,400i,700,700i&display=swap&subset=cyrillic,cyrillic-ext');
 
-  .pointer{
-    cursor: pointer
-  }
+.pointer{
+  cursor: pointer
+}
 </style>

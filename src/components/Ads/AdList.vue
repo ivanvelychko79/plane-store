@@ -1,12 +1,12 @@
 <template>
-	<v-container class="fill-height">
+	<v-container class="fill-height" style="margin-top: -50px;">
 		<v-layout row>
 			<v-flex xs12 sm6 offset-sm3>
 				<h1 class="text--secondary mb-3">Мой Парк</h1>
 
 				<v-card 
 				class="elevation-10 mb-5"
-				v-for="ad in ads"
+				v-for="ad in myAds"
 				:key="ad.id"
 				>
 				<v-layout row>
@@ -35,24 +35,9 @@
 
 <script>
 export default {
-	data () {
-		return {
-			ads: [
-			{
-				title: 'Cessna', 
-				description: 'Cessna 750 Citation X', 
-				promo: false, 
-				imageSrc: require('@/img/cessna-citation-x.jpg'), 
-				id: '123'
-			},
-			{
-				title: 'Gulfstream', 
-				description: 'Gulfstream G650', 
-				promo: true, 
-				imageSrc: require('@/img/gulfstream-g650.jpg'), 
-				id: '123456'
-			}
-			]
+	computed: {
+		myAds () {
+			return this.$store.getters.myAds
 		}
 	}
 }
