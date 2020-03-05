@@ -2,7 +2,7 @@
 	<v-container class="fill-height" style="margin-top: -50px;">
 		<v-layout row>
 			<v-flex xs12 sm6 offset-sm3>
-				<h1 class="text--secondary mb-3">Мой Парк</h1>
+				<h1 class="text--secondary mb-3">Мои модели</h1>
 
 				<v-card 
 				class="elevation-10 mb-5"
@@ -13,7 +13,8 @@
 					<v-flex xs6>
 						<v-img
 						:src="ad.imageSrc"
-						height="150px"
+						height="135"
+						style="margin-left: 12px;"
 						></v-img>
 					</v-flex>
 					<v-flex xs6>

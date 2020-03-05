@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div v-if='!loading'>
 		<v-container mt-n12 mb-10>
 			<v-layout row>
 				<v-flex xs12>
@@ -67,23 +67,60 @@
 		<v-spacer></v-spacer>
 
 		<v-btn text :to="'/ad/' + ad.id">Смотреть</v-btn>
-		<v-btn raised class="primary">Заказать</v-btn>
+		<v-btn raised class="primary">Купить</v-btn>
 	</v-card-actions>
 </v-card>
 </v-flex>
 </v-layout>
 </v-container>
 </div>
+<div v-else class="text-center fill-height">
+	<v-container mb-10>
+		<v-layout row>
+			<v-flex xs12>
+    <v-progress-circular
+      :rotate="360"
+      :size="100"
+      :width="15"
+      :value="value"
+      color="#424242"
+    >
+      {{ value }}
+    </v-progress-circular>
+			</v-flex>
+		</v-layout>
+	</v-container>
+</div>
 </template>
 
 <script>
 export default {
+	data () {
+      return {
+        interval: {},
+        value: 0,
+      }
+    },
+    beforeDestroy () {
+      clearInterval(this.interval)
+    },
+    mounted () {
+      this.interval = setInterval(() => {
+        if (this.value === 100) {
+          return (this.value = 0)
+        }
+        this.value += 10
+      }, 1000)
+    },
 	computed: {
 		promoAds () {
 			return this.$store.getters.promoAds
 		},
 		ads () {
 			return this.$store.getters.ads
+		},
+		loading () {
+			return this.$store.getters.loading
 		}
 	}
 }
@@ -93,6 +130,10 @@ export default {
 .imgSize{
 	height: 400px;
 	width: 600px;
+}
+
+.v-progress-circular {
+  margin: 1rem;
 }
 
 .car-link{

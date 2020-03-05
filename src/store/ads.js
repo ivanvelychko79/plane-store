@@ -1,62 +1,89 @@
+import fb from 'firebase/app'
+
+class Ad {
+	constructor (title, description, ownerId, imageSrc = '', promo = false, id = null) {
+		this.title = title
+		this.description = description
+		this.ownerId = ownerId
+		this.imageSrc = imageSrc
+		this.promo = promo
+		this.id = id
+	}
+}
+
 export default {
 	state: {
-		ads: [
-		{title: 'Cessna', 
-		description: 'Cessna 750 Citation X', 
-		promo: false, 
-		imageSrc: require('@/img/cessna-citation-x.jpg'), 
-		id: '123'},
-		{title: 'Cessna', 
-		description: 'Cessna 680 Citation Sovereign', 
-		promo: true, 
-		imageSrc: require('@/img/cessna-citation-sovereign.jpg'), 
-		id: '1234'},
-		{title: 'Cessna', 
-		description: 'Cessna 510 Citation Mustang', 
-		promo: false, 
-		imageSrc: require('@/img/cessna-citation-mustang.jpg'), 
-		id: '12345'},
-		{title: 'Gulfstream', 
-		description: 'Gulfstream G650', 
-		promo: true, 
-		imageSrc: require('@/img/gulfstream-g650.jpg'), 
-		id: '123456'},
-		{title: 'Gulfstream', 
-		description: 'Gulfstream G550', 
-		promo: false, 
-		imageSrc: require('@/img/gulfstream-g550.jpg'), 
-		id: '1234567'},
-		{title: 'Gulfstream', 
-		description: 'Gulfstream V', 
-		promo: true, 
-		imageSrc: require('@/img/gulfstream-v.jpg'), 
-		id: '12345678'},
-		{title: 'Bombardier', 
-		description: 'Bombardier Global Express', 
-		promo: false, 
-		imageSrc: require('@/img/bombardier-global-express.jpg'), 
-		id: '123456789'},
-		{title: 'Bombardier', 
-		description: 'Bombardier Challenger 600', 
-		promo: true, 
-		imageSrc: require('@/img/bombardier-challenger-600.jpg'), 
-		id: '1234567890'},
-		{title: 'bombardier', 
-		description: 'bombardier-cgallenger-300', 
-		promo: false, 
-		imageSrc: require('@/img/bombardier-challenger-300.jpg'), 
-		id: '12345678901'}
-		]
+		ads: []
 	},
 	mutations: {
 		createAd (state, payload) {
 			state.ads.push(payload)
+		},
+		loadAds (state, payload) {
+			state.ads = payload
 		}
 	},
 	actions: {
-		createAd ({commit}, payload) {
-			payload.id = 'zxcvxvzcxzvcxz'
-			commit('createAd', payload)
+		async createAd ({commit, getters}, payload) {
+			commit('clearError')
+			commit('setLoading', true)
+
+			const image = payload.image
+
+			try {
+				const newAd = new Ad(
+					payload.title,
+					payload.description,
+					getters.user.id,
+					'',
+					payload.promo
+					)
+
+				const ad = await fb.database().ref('ads').push(newAd)
+				const imageExt = image.name.slice(image.name.lastIndexOf('.'))
+
+				const fileData = await fb.storage().ref(`ads/${ad.key}.${imageExt}`).put(image)
+				const imageSrc = await fb.storage().ref().child(fileData.ref.fullPath).getDownloadURL()
+
+				await fb.database().ref('ads').child(ad.key).update({
+					imageSrc
+				})
+
+				commit('setLoading', false)
+				commit('createAd', {
+					...newAd,
+					id: ad.key,
+					imageSrc
+				})
+			} catch (error) {
+				commit('setError', error.message)
+				commit('setLoading', false)
+				throw error
+			}
+		},
+		async fetchAds ({commit}) {
+			commit('clearError')
+			commit('setLoading', true)
+
+			const resultAds = []
+
+			try {
+				const fbVal = await fb.database().ref('ads').once('value')
+				const ads = fbVal.val()
+
+				Object.keys(ads).forEach(key => {
+					const ad = ads[key]
+					resultAds.push(
+						new Ad(ad.title, ad.description, ad.ownerId, ad.imageSrc, ad.promo, key)
+						)
+				})
+				commit('loadAds', resultAds)
+				commit('setLoading', false)
+			} catch (error) {
+				commit('setError', error.message )
+				commit('setLoading', false)
+				throw error
+			}
 		}
 	},
 	getters: {
@@ -73,7 +100,7 @@ export default {
 		},
 		adById (state) {
 			return adId => {
-				return state.ads.find(ad => ad.id ===adId)
+				return state.ads.find(ad => ad.id === adId)
 			}
 		}
 	}

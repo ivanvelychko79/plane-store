@@ -18,8 +18,19 @@
         <v-list-item-title v-text="link.title"></v-list-item-title>
       </v-list-item-content>
     </v-list-item>
-    
-  </v-list>
+    <v-list-item
+    v-if="isUserLoggedIn"
+    @click='onLogout'
+    >
+    <v-list-item-action>
+      <v-icon>mdi-exit-to-app</v-icon>
+    </v-list-item-action>
+    <v-list-item-content>
+      <v-list-item-title v-text="'Выход'"></v-list-item-title>
+    </v-list-item-content>
+  </v-list-item>
+
+</v-list>
 </v-navigation-drawer>
 
 <v-app-bar
@@ -29,7 +40,7 @@ dark
 >
 <v-app-bar-nav-icon @click.stop="drawer = !drawer" class="hidden-md-and-up"/>
 <v-toolbar-title>
-  <router-link to='/' tag='span' class='pointer' style="font-size: 45px; font-family: 'Tangerine', cursive; font-weight: bold;">Business Jet Charter</router-link>
+  <router-link to='/' tag='span' class='pointer' style="font-size: 45px; font-family: 'Tangerine', cursive; font-weight: bold;">Plane Store</router-link>
 </v-toolbar-title>
 <v-spacer></v-spacer>
 <v-toolbar-items link class="hidden-sm-and-down">
@@ -42,6 +53,15 @@ dark
   >
   <v-icon left>{{link.icon}}</v-icon>
   {{link.title}}
+</v-btn>
+<v-btn
+v-if="isUserLoggedIn"
+@click='onLogout'
+text
+style="font-family: 'Istok Web', sans-serif; font-size: 13px;"
+>
+<v-icon left>mdi-exit-to-app</v-icon>
+Выход
 </v-btn>
 </v-toolbar-items>
 </v-app-bar>
@@ -97,23 +117,37 @@ export default {
     color: 'error',
     timeout: 5000,
     mode: '',
-    snackbar: true,
-    links: [
-    {title: 'Вход', icon: 'mdi-account-lock', url: '/login'},
-    {title: 'Регистрация', icon: 'mdi-account-card-details', url: '/registration'},
-    {title: 'Заказы', icon: 'mdi-clipboard-multiple-outline', url: '/orders'},
-    {title: 'Новый борт', icon: 'mdi-note-plus', url: '/new'},
-    {title: 'Мой парк', icon: 'mdi-clipboard-list', url: '/list'}
-    ]
+    snackbar: true
   }),
   computed: {
     error () {
       return this.$store.getters.error
+    },
+    isUserLoggedIn () {
+      return this.$store.getters.isUserLoggedIn
+    },
+    links () {
+      if (this.isUserLoggedIn) {
+        return [
+        {title: 'Заказы', icon: 'mdi-clipboard-multiple-outline', url: '/orders'},
+        {title: 'Новый товар', icon: 'mdi-note-plus', url: '/new'},
+        {title: 'Мои товары', icon: 'mdi-clipboard-list', url: '/list'}
+        ]
+      }
+
+      return [
+      {title: 'Вход', icon: 'mdi-account-lock', url: '/login'},
+      {title: 'Регистрация', icon: 'mdi-account-card-details', url: '/registration'}
+      ]
     }
   },
   methods: {
     closeError () {
       this.$store.dispatch('clearError')
+    },
+    onLogout () {
+      this.$store.dispatch('logoutUser')
+      this.$router.push('/')
     }
   }
 

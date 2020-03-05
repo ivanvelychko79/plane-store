@@ -15,7 +15,7 @@
 					<v-card-actions>
 						<v-spacer></v-spacer>
 						<v-btn class="warning" text>Редактировать</v-btn>
-						<v-btn class="success">Заказать перелет</v-btn>
+						<v-btn class="success">Купить</v-btn>
 					</v-card-actions>
 				</v-card>
 			</v-flex>

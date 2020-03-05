@@ -14,7 +14,7 @@
 	>
 	<v-card class="elevation-12">
 		<v-toolbar
-		color="#A68900"
+		color="#424242"
 		dark
 		flat
 		>
@@ -55,7 +55,8 @@
 <v-card-actions>
 	<v-spacer></v-spacer>
 	<v-btn
-	color="#A68900"
+	color="#424242"
+	dark
 	@click="onSubmit"
 	:loading='loading'
 	:disabled="!valid || loading"

@@ -14,7 +14,7 @@
 	class="elevation-12"
 	>
 	<v-toolbar
-	color="#A68900" 
+	color="#424242" 
 	dark flat
 	>
 	<v-toolbar-title>Login form</v-toolbar-title>
@@ -43,7 +43,8 @@
 <v-card-actions>
 	<v-spacer></v-spacer>
 	<v-btn
-	color="#A68900"
+	color="#424242"
+	dark
 	@click="onSubmit"
 	:loading='loading'
 	:disabled="!valid || loading"
@@ -90,6 +91,11 @@ export default {
 				})
 				.catch(() => {})
 			}
+		}
+	},
+	created () {
+		if (this.$route.query['loginError']) {
+			this.$store.dispatch('setError', 'Пожалуйста войдите, чтобы увидеть эту страницу!')
 		}
 	}
 }
